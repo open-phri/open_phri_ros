@@ -15,7 +15,6 @@ int main(int argc, char* argv[]) {
 
     constexpr double time_step = 10.0_ms;
     constexpr size_t joint_count = 7;
-    auto time = std::make_shared<double>(0.);
 
     auto robot = phri::Robot{"end-effector"_frame, "base"_frame, "LBR4p", joint_count};
     auto model = phri::RobotModel{robot, "robot_models/kuka_lwr4.yaml", "end-effector"};
