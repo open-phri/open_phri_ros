@@ -1,0 +1,12 @@
+<launch>
+    <arg name="debug" default="false" />
+
+    <group if="$(arg debug)">
+        <node pkg="open_phri_ros" type="controller" name="controller" output="screen" launch-prefix="gdb -ex run --args">
+        </node>
+    </group>
+    <group unless="$(arg debug)">
+        <node pkg="open_phri_ros" type="controller" name="controller" output="screen">
+        </node>
+    </group>
+</launch>

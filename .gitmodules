@@ -1,0 +1,3 @@
+[submodule "deps/pid-workspace"]
+	path = deps/pid-workspace
+	url = https://github.com/lirmm/pid-workspace.git

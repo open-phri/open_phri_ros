@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>open_phri_ros</name>
+  <version>0.1.0</version>
+  <description>Provides a ROS interface for the OpenPHRI library</description>
+
+  <maintainer email="navarro@lirmm.fr">Benjamin Navarro</maintainer>
+  <maintainer email="andrea.reynaud@etu.umontpellier.fr">Andréa Reynaud</maintainer>
+
+  <license>CeCILL-C</license>
+
+  <author>Benjamin Navarro</author>
+  <author>Andréa Reynaud</author>
+
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_msgs</depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+</package>
