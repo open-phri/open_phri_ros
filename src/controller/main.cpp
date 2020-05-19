@@ -2,16 +2,69 @@
 #include <OpenPHRI/OpenPHRI.h>
 #include <OpenPHRI/drivers/vrep_driver.h>
 
-#include <physical_quantities/units/units.h>
+#include "open_phri_ros/add.h"
 
 #include <ros/ros.h>
 
 #include <iostream>
+#include <utility>
+#include <vector>
+
+class ConstraintHandler {
+public:
+    ConstraintHandler() {
+        ros::NodeHandle n;
+        services_.push_back(n.advertiseService("add_constraint/velocity", &ConstraintHandler::addVelocityConstraint, this));
+        // TODO add more
+    }
+
+    void update(phri::SafetyController& controller) {
+        // Add constraints and generators
+        while(not functions_.empty()) {
+            functions_.back()(controller);
+            contraints_to_add_.pop_back();
+        }
+    }
+
+private:
+    bool addVelocityConstraint(open_phri_ros::add::Request &req, open_phri_ros::add:Response &res) {
+        functions_.push_back(
+            [req](phri::SafetyController& controller){
+                controller.add<phri::VelocityConstraint>(req.name, scalar::Velocity(req.max_velocity));
+            };
+        );
+        res.stateConstraint=true;
+
+        return true;
+    }
+
+    std::vector<ros::ServiceServer> services_;
+    std::vector<std::function<void(phri::SafetyController&)>> functions_;
+};
+
 
 int main(int argc, char* argv[]) {
     using namespace spatial::literals;
     using namespace units::literals;
     ros::init(argc, argv, "open_phri/controller");
+    
+    ConstraintHandler contraint_handler;
+
+    // TODO reconfigure the controller according to possible service calls
+    // ros::NodeHandle n;
+    // ros::ServiceClient controllerClient = n.serviceClient<open_phri_ros::add>("add"); //"controllerClient" mauvais nom?
+    // open_phri_ros::add srv; 
+    // srv.request.type_of_constraint = "velocity_constraint";
+    // srv.request.max_velocity = 2; //pas sur du format - pour le moment, simple valeur
+
+    // if (controllerClient.call(srv))
+    // {
+    //  ROS_INFO("Constraint added");
+    // }
+    // else
+    // {
+    // ROS_ERROR("Failed to call service add");
+    // }
 
     constexpr double time_step = 10.0_ms;
     constexpr size_t joint_count = 7;
@@ -45,21 +98,8 @@ int main(int argc, char* argv[]) {
             ROS_ERROR("Cannot read data from the robot");
             break;
         }
-        // TODO reconfigure the controller according to possible service calls
-        ros::NodeHandle n;
-        ros::ServiceClient controllerClient = n.serviceClient<open_phri_ros::add>("add"); //"controllerClient" mauvais nom?
-        open_phri_ros::add srv; 
-        srv.request.type_of_constraint = "velocity_constraint";
-        srv.request.max_velocity = 2; //pas sur du format - pour le moment, simple valeur
 
-        if (controllerClient.call(srv))
-        {
-         ROS_INFO("Constraint added");
-        }
-        else
-        {
-        ROS_ERROR("Failed to call service add");
-        }
+        contraint_handler.update(controller);
 
         model.forwardKinematics();
         controller();

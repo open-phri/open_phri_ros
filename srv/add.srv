@@ -1,6 +1,6 @@
+string name
 string type_of_constraint
-scalar::Velocity max_velocity
-
+float64 max_velocity
 ---
 
 #necessaire de mettre une reponse?
