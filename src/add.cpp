@@ -8,11 +8,21 @@
 // #include <OpenPHRI/drivers/vrep_driver.h>
 #include "open_phri_ros/add.h"
 
-int add(string type_of_constraint, int constraint_value){
+// bool add(string type_of_constraint, scalar::Velocity max_velocity){ // impossible de faire switch avec string?
 
-    
+bool add(open_phri_ros::add::Request &req, open_phri_ros::add:Response &res){ // impossible de faire switch avec string?
 
-    return 0;
+
+if(req.type_of_constraint=="velocity_constraint") {
+    //phri::VelocityConstraint::setMaximumVelocity(&max_velocity);
+    //controller().add<phri::VelocityConstraint>("max_velocity", max_velocity);
+
+    auto constraint = std::make_shared<scalar::Velocity>(req.max_velocity);  
+    controller().addConstraint("max_velocity", constraint,false);
+    res.stateConstraint=true;
+}
+
+    return true; // return res.stateConstraint
 }
 
 int main(int argc, char **argv)
@@ -25,3 +35,12 @@ int main(int argc, char **argv)
    ros::spin();
    return 0;
    }
+
+   /* ------------ QUESTIONS ------------ 
+    
+ -> Dans add.srv, pour les contraintes, quel type mettre ? Pour le moment, scalar::Velocity...
+ -> Verifier si le shared pointeur existe ? Pour le creer une premiere fois et apres reecrire dessus si il y a une nouvelle contrainte qui arrive
+ -> On passe en entrée de la fonction add un scalar::Velocity ou un pointeur créé par le controlleur (je pense pas)
+ -> addConstraint ou utiliser template add<T>()?
+ 
+     */

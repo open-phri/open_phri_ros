@@ -46,6 +46,21 @@ int main(int argc, char* argv[]) {
             break;
         }
         // TODO reconfigure the controller according to possible service calls
+        ros::NodeHandle n;
+        ros::ServiceClient controllerClient = n.serviceClient<open_phri_ros::add>("add"); //"controllerClient" mauvais nom?
+        open_phri_ros::add srv; 
+        srv.request.type_of_constraint = "velocity_constraint";
+        srv.request.max_velocity = 2; //pas sur du format - pour le moment, simple valeur
+
+        if (controllerClient.call(srv))
+        {
+         ROS_INFO("Constraint added");
+        }
+        else
+        {
+        ROS_ERROR("Failed to call service add");
+        }
+
         model.forwardKinematics();
         controller();
         if(not driver.send()) {

@@ -1,0 +1,7 @@
+string type_of_constraint
+scalar::Velocity max_velocity
+
+---
+
+#necessaire de mettre une reponse?
+bool stateConstraint #indique si la contrainte a été ajoutée... redondant?
