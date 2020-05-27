@@ -1,6 +1,7 @@
 
 #include <OpenPHRI/OpenPHRI.h>
 #include <OpenPHRI/drivers/vrep_driver.h>
+#include <physical_quantities/units/units.h>
 
 #include "open_phri_ros/add.h"
 
@@ -22,17 +23,17 @@ public:
         // Add constraints and generators
         while(not functions_.empty()) {
             functions_.back()(controller);
-            contraints_to_add_.pop_back();
+            contraints_to_add_.pop_back(); // utilité si fonctions_?
         }
     }
 
 private:
-    bool addVelocityConstraint(open_phri_ros::add::Request &req, open_phri_ros::add:Response &res) {
+    bool addVelocityConstraint(open_phri_ros::add::Request &req, open_phri_ros::add::Response &res) {
         functions_.push_back(
             [req](phri::SafetyController& controller){
                 controller.add<phri::VelocityConstraint>(req.name, scalar::Velocity(req.max_velocity));
-            };
-        );
+            });
+        ;
         res.stateConstraint=true;
 
         return true;
@@ -40,6 +41,7 @@ private:
 
     std::vector<ros::ServiceServer> services_;
     std::vector<std::function<void(phri::SafetyController&)>> functions_;
+    std::vector<phri::VelocityConstraint> contraints_to_add_;
 };
 
 
