@@ -1,0 +1,7 @@
+string name
+string type_of_constraint
+float64 max_velocity
+---
+
+#necessaire de mettre une reponse?
+bool stateConstraint #indique si la contrainte a été ajoutée... redondant?
